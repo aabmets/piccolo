@@ -200,3 +200,26 @@ class TestNestedArray(TestCase):
         row = NestedArrayTable.objects().first().run_sync()
         assert row is not None
         self.assertEqual(row.value, [[1, 2, 3], [4, 5, 6]])
+
+
+class TestGetDimensions(TestCase):
+    def test_get_dimensions(self):
+        """
+        Make sure that `_get_dimensions` returns the correct value.
+        """
+        self.assertEqual(Array(Integer())._get_dimensions(), 1)
+        self.assertEqual(Array(Array(Integer()))._get_dimensions(), 2)
+        self.assertEqual(Array(Array(Array(Integer())))._get_dimensions(), 3)
+
+
+class TestGetInnerValueType(TestCase):
+
+    def test_get_inner_value_type(self):
+        """
+        Make sure that `_get_inner_value_type` returns the correct base type.
+        """
+        self.assertEqual(Array(Integer())._get_inner_value_type(), int)
+        self.assertEqual(Array(Array(Integer()))._get_inner_value_type(), int)
+        self.assertEqual(
+            Array(Array(Array(Integer())))._get_inner_value_type(), int
+        )

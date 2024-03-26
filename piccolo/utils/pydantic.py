@@ -280,6 +280,7 @@ def create_pydantic_model(
             "choices": column._meta.get_choices_dict(),
             "secret": column._meta.secret,
             "nullable": column._meta.null,
+            "unique": column._meta.unique,
         }
 
         if isinstance(column, ForeignKey):
@@ -332,6 +333,11 @@ def create_pydantic_model(
                 extra["widget"] = "json"
             elif isinstance(column, Timestamptz):
                 extra["widget"] = "timestamptz"
+
+            # It is useful for Piccolo API and Piccolo Admin to easily know
+            # how many dimensions the array has.
+            if isinstance(column, Array):
+                extra["dimensions"] = column._get_dimensions()
 
         field = pydantic.Field(
             json_schema_extra={"extra": extra},
